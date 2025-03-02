@@ -79,6 +79,12 @@ These instructions make the following assumptions:
     ```
 1. Restart Blender - changes to the script directory won't take effect until Blender has been restarted.
 
+#### Experimental: Alternative installation
+There's an alternative packaging method for the add-on that's simpler to build and install.
+1. From the repo root, run `python buildExtension.py --version 0.5.3`. The script will generate a portable Blender add-on under `dist/deadline-cloud-blender-addon-0.5.2.zip`.
+2. Go to Blender, click the Edit menu, select Preferences..., click the Add-ons tab, click the downward facing arrow in the upper right, then click Install from Disk... Select the zip file from the previous step.
+3. The add-on is now installed! You can the new Submit to AWS Deadline Cloud option in the Render menu.
+
 #### Usage
 
 This repository comes with the addon: `deadline_cloud_blender_submitter`
