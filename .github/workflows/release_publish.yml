@@ -1,5 +1,5 @@
-name: "Release: Publish"
-run-name: "Release: ${{ github.event.head_commit.message }}"
+name: 'Release: Publish'
+run-name: 'Release: ${{ github.event.head_commit.message }}'
 
 on:
   push:

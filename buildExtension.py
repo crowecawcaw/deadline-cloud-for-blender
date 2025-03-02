@@ -77,4 +77,4 @@ with TemporaryDirectory() as temp:
     with open(str(Path(temp) / "blender_manifest.toml"), "w") as file:
         file.write(manifest)
 
-    zip = shutil.make_archive(f"dist/deadline-cloud-blender-addon-{version}", "zip", temp)
+    zip = shutil.make_archive(f"dist/deadline-cloud-blender-addon", "zip", temp)
