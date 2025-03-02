@@ -20,3 +20,5 @@ jobs:
       - name: 'Attach artifacts to release'
         if: inputs.semver != ''
         run: gh release upload ${{ inputs.semver }} dist/deadline-cloud-blender-addon.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
