@@ -1,10 +1,11 @@
 name: Build add-on
 run-name: ${{ github.actor }} is building an the Blender Add-on from ${{ github.ref }}
-on: [workflow_dispatch]
-  inputs:
-    semver:
-      type: string
-      description: The release version to attach the assets to
+on:
+  [workflow_dispatch]
+  # inputs:
+  #   semver:
+  #     type: string
+  #     description: The release version to attach the assets to
 jobs:
   Build:
     runs-on: ubuntu-latest
