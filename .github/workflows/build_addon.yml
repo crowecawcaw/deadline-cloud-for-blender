@@ -1,0 +1,14 @@
+name: Build add-on
+run-name: ${{ github.actor }} is building an the Blender Add-on from ${{ github.ref }}
+on: [workflow_dispatch]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Build Add-on'
+        run: python buildExtension.py
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist/**/*.zip
