@@ -17,8 +17,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: dist/deadline-cloud-blender-addon.zip
+          name: deadline-cloud-blender-addon.zip
       - name: 'Attach artifacts to release'
         if: inputs.semver != ''
-        run: gh release upload ${{ inputs.semver }} dist/deadline-cloud-blender-addon.zip
+        run: |
+          echo ${{ inputs.semver }}
+          gh release upload ${{ inputs.semver }} dist/deadline-cloud-blender-addon.zip
         env:
           GH_TOKEN: ${{ github.token }}
