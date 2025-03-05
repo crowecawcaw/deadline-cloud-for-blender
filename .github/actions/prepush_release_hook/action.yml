@@ -9,10 +9,31 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Zip submitter plugin
-    shell: bash
-    run: |
-      mkdir dist_extras
-      cd src/deadline/blender_submitter/addons
-      zip -r  ../../../../dist_extras/blender_submitter_plugin_${{inputs.semver}}.zip .
-      cd ../../../../
+    - name: Zip submitter plugin
+      shell: bash
+      run: |
+        mkdir -p dist_extras
+        cd src/deadline/blender_submitter/addons
+        zip -r  ../../../../dist_extras/blender_submitter_plugin_${{inputs.semver}}.zip .
+        cd ../../../../
+
+    - name: Configure pip to use CodeArtifact
+      shell: bash
+      if: ${{ secrets.CODEARTIFACT_DOMAIN != '' }}
+      env:
+        CODEARTIFACT_REGION: 'us-west-2'
+        CODEARTIFACT_DOMAIN: ${{ secrets.CODEARTIFACT_DOMAIN }}
+        CODEARTIFACT_ACCOUNT_ID: ${{ secrets.CODEARTIFACT_ACCOUNT_ID }}
+        CODEARTIFACT_REPOSITORY: ${{ secrets.CODEARTIFACT_REPOSITORY }}
+      run: |
+        aws codeartifact login \
+          --tool pip \
+          --domain $CODEARTIFACT_DOMAIN \
+          --domain-owner $CODEARTIFACT_ACCOUNT_ID \
+          --repository $CODEARTIFACT_REPOSITORY \
+          --region $CODEARTIFACT_REGION
+
+    - name: Build Blender add-on and extension respository index
+      shell: bash
+      run: |
+        python buildAddon.py --version ${{ inputs.semver }}
