@@ -18,7 +18,7 @@ jobs:
       id-token: write
       contents: write
     # uses: aws-deadline/.github/.github/workflows/reusable_publish.yml@mainline
-    uses: crowecawcaw/.github/.github/workflows/reusable_publish.yml@mainline
+    uses: crowecawcaw/.aws-deadline-github/.github/workflows/reusable_publish.yml@mainline
     secrets: inherit
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
