@@ -1,17 +1,17 @@
-name: "Release: Bump"
+name: 'Release: Bump'
 
 on:
   workflow_dispatch:
     inputs:
       force_version_bump:
         required: false
-        default: ""
+        default: ''
         type: choice
         options:
-        - ""
-        - patch
-        - minor
-        - major
+          - ''
+          - patch
+          - minor
+          - major
 
 concurrency:
   group: release
@@ -26,7 +26,8 @@ jobs:
   Bump:
     name: Version Bump
     needs: UnitTests
-    uses: aws-deadline/.github/.github/workflows/reusable_bump.yml@mainline
+    # uses: aws-deadline/.github/.github/workflows/reusable_bump.yml@mainline
+    uses: crowecawcaw/.github/.github/workflows/reusable_bump.yml@mainline
     secrets: inherit
     with:
       force_version_bump: ${{ inputs.force_version_bump }}
