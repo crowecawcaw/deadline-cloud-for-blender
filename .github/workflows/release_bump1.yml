@@ -27,7 +27,7 @@ jobs:
     name: Version Bump
     needs: UnitTests
     # uses: aws-deadline/.github/.github/workflows/reusable_bump.yml@mainline
-    uses: crowecawcaw/.github/.github/workflows/reusable_bump.yml@mainline
+    uses: crowecawcaw/.deadline-cloud-github/.github/workflows/reusable_bump.yml@mainline
     secrets: inherit
     with:
       force_version_bump: ${{ inputs.force_version_bump }}
