@@ -1,6 +1,6 @@
 ## 0.1.0 (2025-03-07)
 
-
+1
 ### Features
 * experimental support for building portable Blender add-on ([`14f2a6b`](https://github.com/crowecawcaw/deadline-cloud-for-blender/commit/14f2a6b0a38a25de0fad295e48eea8d8052f4424))
 * output directory and output file prefix is remembered when submitting the same scene (#188) ([`1db21c6`](https://github.com/crowecawcaw/deadline-cloud-for-blender/commit/1db21c6617dc3b44f6149df707642b42956fb061))
