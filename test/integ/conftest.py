@@ -20,6 +20,22 @@ def blender_location() -> Path:
     if location:
         return Path(location)
 
+    # If BLENDER_VERSION is set, use platform-specific path
+    blender_version_env = os.environ.get("BLENDER_VERSION")
+    if blender_version_env:
+        if os.name == "nt":
+            location = f"C:\\Tools\\blender-{blender_version_env}-windows-x64\\blender.exe"
+            if os.path.exists(location):
+                return Path(location)
+        elif sys.platform == "darwin":
+            location = f"/Applications/Blender-{blender_version_env}.app/Contents/MacOS/Blender"
+            if os.path.exists(location):
+                return Path(location)
+        else:  # Linux
+            location = f"/opt/blender-{blender_version_env}-linux-x64/blender"
+            if os.path.exists(location):
+                return Path(location)
+
     # If Blender is in the PATH, use that
     location = shutil.which("blender")
     if location:
@@ -57,6 +73,16 @@ def blender_version(blender_location) -> str:
     if not match:
         raise RuntimeError(f"Could not parse Blender version from {first_line}")
     version = match.group("version")
+
+    env_version = os.environ.get("BLENDER_VERSION")
+    if env_version:
+        # Compare only major.minor (e.g., "4.5" from "4.5.4")
+        env_version_short = ".".join(env_version.split(".")[:2])
+        assert version == env_version_short, (
+            f"BLENDER_VERSION env var ({env_version}) does not match "
+            f"blender --version output ({version})"
+        )
+
     return version
 
 
