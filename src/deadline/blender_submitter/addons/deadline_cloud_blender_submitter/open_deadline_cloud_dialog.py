@@ -128,11 +128,11 @@ def create_deadline_dialog(parent=None) -> SubmitJobToDeadlineDialog:
         attachments=attachments,
         on_create_job_bundle_callback=_create_bundle,
         parent=parent,
-        f=Qt.Tool,
+        f=Qt.WindowType.Tool,
         show_host_requirements_tab=True,
         submitter_info=submitter_info,
     )
-    dialog.setWindowFlags(Qt.WindowStaysOnTopHint)
+    dialog.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
     return dialog
 
 

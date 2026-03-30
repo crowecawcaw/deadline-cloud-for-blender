@@ -100,13 +100,13 @@ def _prompt_unsaved_changes():
     msg = QtWidgets.QMessageBox()
     msg.setText("Scene has unsaved changes.")
     msg.setWindowTitle("Blender")
-    msg.addButton("Save", QtWidgets.QMessageBox.YesRole)
-    msg.addButton("Don't Save", QtWidgets.QMessageBox.NoRole)
-    msg.addButton(QtWidgets.QMessageBox.Cancel)
+    msg.addButton("Save", QtWidgets.QMessageBox.ButtonRole.YesRole)
+    msg.addButton("Don't Save", QtWidgets.QMessageBox.ButtonRole.NoRole)
+    msg.addButton(QtWidgets.QMessageBox.StandardButton.Cancel)
     return_value = msg.exec()
     if return_value == 0:
         bpy.ops.wm.save_mainfile()
-    elif return_value == QtWidgets.QMessageBox.Cancel:
+    elif return_value == QtWidgets.QMessageBox.StandardButton.Cancel:
         raise RuntimeError("Submission cancelled.")
 
 
