@@ -107,11 +107,11 @@ These instructions make the following assumptions:
     - `cp -r src/deadline/blender_submitter/addons/ ~/DeadlineCloudSubmitter/Submitters/Blender/python/addons`
 1. Install addon dependencies:
     - For Blender 3.6-4.0 (uses python 3.10):
-        - Windows: `pip install --python-version 3.10 --only-binary=:all: "deadline[gui]" blender-qt-stylesheet -t %USERPROFILE%\DeadlineCloudSubmitter\Submitters\Blender\python\modules`
-        - Linux/macOS: `pip install --python-version 3.10 --only-binary=:all: "deadline[gui]" blender-qt-stylesheet -t ~/DeadlineCloudSubmitter/Submitters/Blender/python/modules`
+        - Windows: `pip install --python-version 3.10 --only-binary=:all: "deadline-cloud-for-blender[gui]" blender-qt-stylesheet -t %USERPROFILE%\DeadlineCloudSubmitter\Submitters\Blender\python\modules`
+        - Linux/macOS: `pip install --python-version 3.10 --only-binary=:all: "deadline-cloud-for-blender[gui]" blender-qt-stylesheet -t ~/DeadlineCloudSubmitter/Submitters/Blender/python/modules`
     - For Blender 4.1-4.5 (uses python 3.11):
-        - Windows: `pip install --python-version 3.11 --only-binary=:all: "deadline[gui]" blender-qt-stylesheet -t %USERPROFILE%\DeadlineCloudSubmitter\Submitters\Blender\python\modules`
-        - Linux/macOS: `pip install --python-version 3.11 --only-binary=:all: "deadline[gui]" blender-qt-stylesheet -t ~/DeadlineCloudSubmitter/Submitters/Blender/python/modules`
+        - Windows: `pip install --python-version 3.11 --only-binary=:all: "deadline-cloud-for-blender[gui]" blender-qt-stylesheet -t %USERPROFILE%\DeadlineCloudSubmitter\Submitters\Blender\python\modules`
+        - Linux/macOS: `pip install --python-version 3.11 --only-binary=:all: "deadline-cloud-for-blender[gui]" blender-qt-stylesheet -t ~/DeadlineCloudSubmitter/Submitters/Blender/python/modules`
 1. Add a script directory in Blender by "Edit" > "Preferences" > "File Paths" > "Script Directories"
     * Windows: `%USERPROFILE%\DeadlineCloudSubmitter\Submitters\Blender\python`
     * Linux/macOS: `~/DeadlineCloudSubmitter/Submitters/Blender/python`
