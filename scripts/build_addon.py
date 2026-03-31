@@ -7,9 +7,12 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import tarfile
 from tempfile import TemporaryDirectory
 import hashlib
 import re
+
+from depsBundle import _strip_pyside6
 
 parser = argparse.ArgumentParser(description="Experimental: Builds a Blender extension")
 parser.add_argument("--version", required=False)
@@ -19,12 +22,34 @@ version = args.version or "0.0.0"
 
 SUPPORTED_PLATFORMS = [
     "win_amd64",
-    "manylinux_2_17_x86_64",
-    "macosx_11_0_arm64",
-    "macosx_10_9_x86_64",
+    "manylinux_2_28_x86_64",
+    "macosx_12_0_arm64",
+    "macosx_12_0_x86_64",
 ]
 ADDON_NAME = "Deadline Cloud for Blender"
 ADDON_TAGLINE = "Submit to AWS Deadline Cloud"
+
+
+def strip_pyside6_wheel(whl_path: str) -> None:
+    """Strip a PySide6/shiboken6 wheel in-place, keeping only files in PYSIDE6_ALLOWLIST."""
+    with TemporaryDirectory() as extract_dir:
+        # Extract, strip, re-zip
+        shutil.unpack_archive(whl_path, extract_dir, "zip")
+        _strip_pyside6(Path(extract_dir))
+
+        # Rewrite RECORD from remaining files
+        dist_info = next(Path(extract_dir).glob("*.dist-info"))
+        record_path = dist_info / "RECORD"
+        with open(record_path, "w") as f:
+            for file in sorted(Path(extract_dir).rglob("*")):
+                if file.is_file() and file != record_path:
+                    f.write(f"{file.relative_to(extract_dir)},,\n")
+            f.write(f"{record_path.relative_to(extract_dir)},,\n")
+
+        os.remove(whl_path)
+        shutil.make_archive(whl_path.removesuffix(".whl"), "zip", extract_dir)
+        os.rename(whl_path.removesuffix(".whl") + ".zip", whl_path)
+
 
 with TemporaryDirectory() as temp:
     shutil.copytree(
@@ -40,11 +65,14 @@ with TemporaryDirectory() as temp:
 
     # Find the version of the deadline library specified in project.toml
     project_toml_contents = (Path(__file__).parent.parent / "pyproject.toml").read_text()
-    match = re.search(r"\"deadline .+ .+\"", project_toml_contents)
+    match = re.search(r"\"deadline\S* .+ .+\"", project_toml_contents)
     if not match:
         raise RuntimeError("Could not find the deadline version requirement in project.toml")
     deadline_version_requirement = match.group(0).replace('"', "")
     print(f"Found requirement {deadline_version_requirement} in project.toml")
+
+    # Extract the bare version spec (without extras) for downloading the sdist
+    deadline_version_spec = re.sub(r"\[.*?\]", "", deadline_version_requirement)
 
     # Download the wheels of the deadline library and its dependencies
     for platform in SUPPORTED_PLATFORMS:
@@ -61,6 +89,39 @@ with TemporaryDirectory() as temp:
             ],
             check=True,
         )
+
+    # Strip PySide6/shiboken6 wheels to only keep the modules we need
+    for whl in glob(f"{temp}/wheels/[Pp][Yy][Ss]ide6*") + glob(f"{temp}/wheels/shiboken6*"):
+        print(f"Stripping {os.path.basename(whl)}")
+        strip_pyside6_wheel(whl)
+
+    # Extract THIRD_PARTY_LICENSES files from the deadline sdist
+    licenses_dir = Path(temp) / "THIRD_PARTY_LICENSES"
+    licenses_dir.mkdir()
+    with TemporaryDirectory() as sdist_dir:
+        subprocess.run(
+            [
+                "pip",
+                "download",
+                deadline_version_spec,
+                "--no-binary=:all:",
+                "--no-deps",
+                "--dest",
+                sdist_dir,
+            ],
+            check=True,
+        )
+        sdist_tarball = next(Path(sdist_dir).glob("deadline-*.tar.gz"))
+        with tarfile.open(sdist_tarball) as tar:
+            for member in tar.getmembers():
+                if member.name.endswith("/THIRD_PARTY_LICENSES"):
+                    # e.g. deadline-0.54.2/scripts/attributions/approved_text/Linux/THIRD_PARTY_LICENSES
+                    platform_name = Path(member.name).parent.name
+                    content = tar.extractfile(member)
+                    if content:
+                        (licenses_dir / f"THIRD_PARTY_LICENSES-{platform_name}").write_bytes(
+                            content.read()
+                        )
     wheel_filenames = [os.path.basename(wheel) for wheel in glob(f"{temp}/wheels/*")]
     wheel_block = "\n".join([f'"./wheels/{filename}",' for filename in wheel_filenames])
 

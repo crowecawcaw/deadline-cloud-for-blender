@@ -96,6 +96,16 @@ def _validate_files(installation_path: Path) -> None:
     assert "xxhash" in module_dir
     assert "psutil" in module_dir
 
+    # Verify PySide6/shiboken6 are bundled and stripped correctly
+    assert "PySide6" in module_dir
+    assert "shiboken6" in module_dir
+    pyside_dir = [f.name for f in (python_dir / "modules" / "PySide6").iterdir()]
+    assert "QtCore.abi3.so" in pyside_dir or "QtCore.pyd" in pyside_dir
+    assert "QtWidgets.abi3.so" in pyside_dir or "QtWidgets.pyd" in pyside_dir
+    # Verify unused Qt modules were stripped by the allowlist
+    assert "lupdate" not in pyside_dir
+    assert "lrelease" not in pyside_dir
+
     # Check the blender module is here and there's a version file
     addon_dir = [
         f.name for f in (python_dir / "addons" / "deadline_cloud_blender_submitter").iterdir()

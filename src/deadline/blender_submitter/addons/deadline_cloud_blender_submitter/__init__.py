@@ -4,8 +4,6 @@
 Registration of Deadline Cloud Submitter Addon + activate logger
 """
 import logging
-from pathlib import Path
-import subprocess
 import sys
 
 import bpy  # noqa
@@ -47,9 +45,6 @@ class DEADLINE_CLOUD_OT_open_dialog(Operator):
 
         See the bpy Operator docs: https://docs.blender.org/api/current/bpy.types.Operator.html
         """
-        if not self.has_gui_deps():
-            self.install_gui()
-
         from qtpy import QtCore, QtWidgets
         from .open_deadline_cloud_dialog import (
             create_deadline_dialog,
@@ -93,57 +88,8 @@ class DEADLINE_CLOUD_OT_open_dialog(Operator):
         self.report({"INFO"}, "OK!")
         return {"FINISHED"}
 
-    def draw(self, context):
-        layout = self.layout
-        col = layout.column()
-        col.label(text="Press 'OK' to install GUI dependencies. Please wait...")
-
     def invoke(self, context, event):
-        if self.has_gui_deps():
-            # don't prompt user if gui deps exist
-            return self.execute(context)
-        wm = context.window_manager
-        return wm.invoke_props_dialog(self)
-
-    def has_gui_deps(self):
-        try:
-            import qtpy  # noqa
-            from .open_deadline_cloud_dialog import (  # noqa
-                create_deadline_dialog,
-            )
-        except Exception as e:
-            # qtpy throws a QtBindingsNotFoundError when running
-            # from qtpy import QtBindingsNotFoundError
-            if not (type(e).__name__ == "QtBindingsNotFoundError" or isinstance(e, ImportError)):
-                raise
-            return False
-
-        return True
-
-    def install_gui(self):
-        import deadline.client
-
-        deadline.client.version
-        pip_install_command = [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            f"deadline[gui]=={deadline.client.version}",
-        ]
-        # module_directory assumes relative install location of:
-        #   * [installdir]/Submitters/Blender/python/addons/deadline_cloud_blender_submitter/__init__.py
-        #   * [installdir]/Submitters/Blender/python/modules/
-        module_directory = Path(__file__).parent.parent.parent / "modules"
-        if module_directory.exists():
-            _logger.info(f"Missing GUI libraries, installing deadline[gui] to {module_directory}")
-            pip_install_command.extend(["--target", str(module_directory)])
-        else:
-            _logger.info(
-                "Missing GUI libraries with non-standard set-up, installing deadline[gui] into Blender's python"
-            )
-
-        subprocess.run(pip_install_command)
+        return self.execute(context)
 
 
 def deadline_cloud_dialog_topbar_btn(self, context):
